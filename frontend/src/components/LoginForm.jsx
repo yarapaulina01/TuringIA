@@ -16,16 +16,10 @@ function LoginForm({ onLogin, onCancel }) {
     try {
       const user = await login(email, password);
 
-      if (user.role !== 'admin') {
-        setError(
-          'Tu cuenta no tiene permisos de administrador.'
-        );
-        return;
-      }
-
+      // Aceptar tanto administradores como usuarios comunes
       onLogin(user);
     } catch (err) {
-      setError(err.message || 'Error al iniciar sesión.');
+      setError(err.message || 'No se pudo iniciar sesión. Verifica tus credenciales.');
     } finally {
       setLoading(false);
     }
@@ -33,8 +27,8 @@ function LoginForm({ onLogin, onCancel }) {
 
   return (
     <section className="login-panel">
-      <h2>Acceso de administrador</h2>
-      <p>Inicia sesión para administrar los productos.</p>
+      <h2>Iniciar sesión</h2>
+      <p>Ingresa a tu cuenta de TecnoShop Pro.</p>
 
       <form onSubmit={handleSubmit}>
         <label htmlFor="login-email">Correo electrónico</label>
@@ -43,7 +37,7 @@ function LoginForm({ onLogin, onCancel }) {
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="admin@ejemplo.com"
+          placeholder="correo@ejemplo.com"
           autoComplete="username"
           required
         />

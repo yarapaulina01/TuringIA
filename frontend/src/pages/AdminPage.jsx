@@ -22,6 +22,20 @@ function AdminPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('all');
+
+    const filteredProducts = products.filter((product) => {
+        const matchesCategory =
+            selectedCategory === 'all' ||
+            String(product.category_id) === String(selectedCategory);
+
+        const matchesSearch =
+            (product.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (product.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+
+        return matchesCategory && matchesSearch;
+    });
 
     useEffect(() => {
         if (user?.role !== 'admin') {
@@ -152,6 +166,57 @@ function AdminPage() {
                     </button>
                 </div>
 
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Buscar productos..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        aria-label="Buscar productos"
+                    />
+
+                    {searchTerm && (
+                        <button
+                            type="button"
+                            onClick={() => setSearchTerm('')}
+                        >
+                            Limpiar
+                        </button>
+                    )}
+                </div>
+
+                <nav className="category-filters" aria-label="Filtrar productos">
+                    <button
+                        type="button"
+                        className={selectedCategory === 'all' ? 'active' : ''}
+                        onClick={() => setSelectedCategory('all')}
+                    >
+                        Todos
+                    </button>
+
+                    {categories.map((category) => (
+                        <button
+                            type="button"
+                            key={category.id}
+                            className={
+                                String(selectedCategory) === String(category.id)
+                                    ? 'active'
+                                    : ''
+                            }
+                            onClick={() => setSelectedCategory(String(category.id))}
+                        >
+                            {category.name}
+                        </button>
+                    ))}
+                </nav>
+
+                <div className="catalog-results">
+                    <span>
+                        {filteredProducts.length}{' '}
+                        {filteredProducts.length === 1 ? 'producto' : 'productos'}
+                    </span>
+                </div>
+
                 {message && (
                     <p className="crud-message" role="status">
                         {message}
@@ -169,13 +234,13 @@ function AdminPage() {
                     <p className="status-message">
                         Cargando productos...
                     </p>
-                ) : products.length === 0 ? (
+                ) : filteredProducts.length === 0 ? (
                     <p className="status-message">
                         No hay productos registrados.
                     </p>
                 ) : (
                     <div className="product-grid">
-                        {products.map((product) => (
+                        {filteredProducts.map((product) => (
                             <div className="product-wrapper" key={product.id}>
                                 <ProductCard product={product} />
 

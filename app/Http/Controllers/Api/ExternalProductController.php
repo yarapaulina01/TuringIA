@@ -14,7 +14,7 @@ class ExternalProductController extends Controller
     {
         try {
             $response = Http::timeout(10)
-            ->get('https://api.testingapis.com/api/Products/category/electronics');
+                ->get('https://api.testingapis.com/api/Products/category/electronics');
 
             if ($response->failed()) {
                 return response()->json([
@@ -28,16 +28,15 @@ class ExternalProductController extends Controller
                 'message' => 'Productos externos obtenidos correctamente.',
                 'data' => $response->json(),
             ]);
-
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-    Log::error('Error al conectar con DummyJSON', [
-        'exception' => $e->getMessage(),
-    ]);
+            Log::error('Error al conectar con TestingAPIs', [
+                'exception' => $e->getMessage(),
+            ]);
 
-    return response()->json([
-        'success' => false,
-        'message' => 'No fue posible conectar con la API externa.',
-    ], 502);
-}
+            return response()->json([
+                'success' => false,
+                'message' => 'No fue posible conectar con la API externa.',
+            ], 502);
+        }
     }
 }
